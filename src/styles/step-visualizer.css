@@ -1,0 +1,38 @@
+/* Step Visualizer Styles */
+.step-visualizer {
+  margin-bottom: 1.5rem;
+}
+
+.step-info-card {
+  background: linear-gradient(to right, rgba(254, 249, 195, 0.2), rgba(124, 58, 237, 0.05));
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  height: 100%;
+}
+
+.step-navigation {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.progress {
+  height: 0.5rem;
+  background-color: rgba(124, 58, 237, 0.2);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(to right, var(--secondary-color), var(--accent-color));
+  border-radius: 1rem;
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .step-info-card {
+    margin-top: 1.5rem;
+  }
+}
