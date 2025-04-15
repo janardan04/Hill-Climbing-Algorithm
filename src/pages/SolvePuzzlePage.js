@@ -288,7 +288,7 @@ const SolvePuzzlePage = () => {
                   {error}
                   {error.includes('Local Optimum') && (
                     <p className="mt-2">
-                      Suggestion: Try generating a new random puzzle or use a different algorithm like A* search which guarantees finding a solution if one exists.
+                      Suggestion: Try generating a new random puzzle.
                     </p>
                   )}
                   {error.includes('Plateau') && (
