@@ -1,17 +1,20 @@
 "use client"
-
 import { useState, useEffect } from "react"
 import PuzzleBoard from "../components/PuzzleBoard"
 import PuzzleControls from "../components/PuzzleControls"
 import StepVisualizer from "../components/StepVisualizer"
+import { hillClimbing } from "../utils/hillClimbing"
+import { generateRandomPuzzle } from "../utils/puzzleGenerator"
+import { calculateManhattanDistance, getPossibleMoves, applyMove, findEmptyPosition } from "../utils/hillClimbing"
+import { areStatesEqual, isSolvable } from "../utils/puzzleSolver"
 import "../styles/solve-puzzle.css"
 import "../styles/main.css"
 
 const SolvePuzzlePage = () => {
   const [puzzle, setPuzzle] = useState([
     [1, 2, 3],
-    [4, 5, 6],
-    [7, 8, 0],
+    [4, 0, 6],
+    [7, 8, 5],
   ])
   const [goalState] = useState([
     [1, 2, 3],
@@ -25,181 +28,6 @@ const SolvePuzzlePage = () => {
   const [isSolving, setIsSolving] = useState(false)
   const [showAllSteps, setShowAllSteps] = useState(false)
   const [animationSpeed, setAnimationSpeed] = useState(2000)
-
-  const findEmptyPosition = (state) => {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        if (state[i][j] === 0) {
-          return { row: i, col: j }
-        }
-      }
-    }
-  }
-
-  const getPossibleMoves = (state) => {
-    const { row, col } = findEmptyPosition(state)
-    const moves = []
-
-    if (row < 2) {
-      moves.push({
-        direction: "up",
-        row: row + 1,
-        col,
-        tile: state[row + 1][col],
-      })
-    }
-
-    if (row > 0) {
-      moves.push({
-        direction: "down",
-        row: row - 1,
-        col,
-        tile: state[row - 1][col],
-      })
-    }
-
-    if (col < 2) {
-      moves.push({
-        direction: "left",
-        row,
-        col: col + 1,
-        tile: state[row][col + 1],
-      })
-    }
-
-    if (col > 0) {
-      moves.push({
-        direction: "right",
-        row,
-        col: col - 1,
-        tile: state[row][col - 1],
-      })
-    }
-
-    return moves
-  }
-
-  const applyMove = (state, move) => {
-    const newState = state.map((row) => [...row])
-    const emptyPos = findEmptyPosition(newState)
-
-    newState[emptyPos.row][emptyPos.col] = newState[move.row][move.col]
-    newState[move.row][move.col] = 0
-
-    return newState
-  }
-
-  const calculateManhattanDistance = (currentState, goalState) => {
-    let distance = 0
-    const goalPositions = {}
-
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        const value = goalState[i][j]
-        if (value !== 0) {
-          goalPositions[value] = { row: i, col: j }
-        }
-      }
-    }
-
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        const value = currentState[i][j]
-        if (value !== 0 && goalPositions[value]) {
-          const goal = goalPositions[value]
-          distance += Math.abs(i - goal.row) + Math.abs(j - goal.col)
-        }
-      }
-    }
-
-    return distance
-  }
-
-  const isSolvable = (puzzle) => {
-    const flatPuzzle = puzzle.flat()
-    let inversions = 0
-    for (let i = 0; i < flatPuzzle.length; i++) {
-      if (flatPuzzle[i] === 0) continue
-      for (let j = i + 1; j < flatPuzzle.length; j++) {
-        if (flatPuzzle[j] === 0) continue
-        if (flatPuzzle[i] > flatPuzzle[j]) {
-          inversions++
-        }
-      }
-    }
-    const emptyPos = findEmptyPosition(puzzle)
-    const emptyRowFromBottom = 3 - emptyPos.row
-    return emptyRowFromBottom % 2 === 1 ? inversions % 2 === 0 : inversions % 2 === 1
-  }
-
-  const generateRandomPuzzle = () => {
-    let puzzle
-    do {
-      const numbers = Array.from({ length: 9 }, (_, i) => i)
-      for (let i = numbers.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1))
-        ;[numbers[i], numbers[j]] = [numbers[j], numbers[i]]
-      }
-      puzzle = []
-      for (let i = 0; i < 3; i++) {
-        puzzle.push(numbers.slice(i * 3, (i + 1) * 3))
-      }
-    } while (!isSolvable(puzzle))
-    return puzzle
-  }
-
-  const hillClimbing = (initialState, goalState) => {
-    const visited = new Set()
-    const path = []
-    let current = {
-      state: initialState,
-      move: null,
-      hValue: calculateManhattanDistance(initialState, goalState),
-      gValue: 0,
-      fValue: calculateManhattanDistance(initialState, goalState),
-    }
-
-    path.push(current)
-    visited.add(JSON.stringify(current.state))
-
-    while (current.hValue > 0) {
-      const possibleMoves = getPossibleMoves(current.state)
-      let bestMove = null
-      let bestHValue = Number.POSITIVE_INFINITY
-
-      for (const move of possibleMoves) {
-        const newState = applyMove(current.state, move)
-        const stateStr = JSON.stringify(newState)
-        if (visited.has(stateStr)) continue
-        const hValue = calculateManhattanDistance(newState, goalState)
-        if (hValue < bestHValue) {
-          bestHValue = hValue
-          bestMove = { move, state: newState }
-        }
-      }
-
-      if (!bestMove || bestHValue >= current.hValue) {
-        break
-      }
-
-      current = {
-        state: bestMove.state,
-        move: bestMove.move,
-        hValue: bestHValue,
-        gValue: current.gValue + 1,
-        fValue: bestHValue + current.gValue + 1,
-      }
-
-      path.push(current)
-      visited.add(JSON.stringify(current.state))
-
-      if (path.length > 100) {
-        break
-      }
-    }
-
-    return { path }
-  }
 
   const handleCellChange = (row, col, value) => {
     const newPuzzle = [...puzzle]
@@ -380,21 +208,27 @@ const SolvePuzzlePage = () => {
                   </div>
 
                   <div className="speed-control fade-in" style={{ animationDelay: "0.35s" }}>
-                    <label htmlFor="animationSpeed">Animation Speed:</label>
+                    <label htmlFor="animationSpeed">Solve Speed:</label>
                     <select
                       id="animationSpeed"
                       value={animationSpeed}
                       onChange={handleSpeedChange}
                       disabled={isAnimating}
                     >
-                      <option value="500">Fast (0.5s)</option>
-                      <option value="1000">Medium (1s)</option>
-                      <option value="2000">Slow (2s)</option>
-                      <option value="3000">Very Slow (3s)</option>
+                      <option value="500">0.5s</option>
+                      <option value="1000">1s</option>
+                      <option value="2000">2s</option>
+                      <option value="3000">3s</option>
+                      <option value="4000">4s</option>
+                      <option value="10000">10s</option>
                     </select>
                   </div>
 
-                  <StepVisualizer step={solution[currentStep]} totalSteps={solution.length} currentStep={currentStep} />
+                  <StepVisualizer
+                    step={solution[currentStep]}
+                    totalSteps={solution.length}
+                    currentStep={currentStep}
+                  />
 
                   <div className="step-navigation mt-3 fade-in" style={{ animationDelay: "0.4s" }}>
                     <button
@@ -448,18 +282,29 @@ const SolvePuzzlePage = () => {
                               setIsAnimating(false)
                             }}
                           >
-                            <div className="row align-items-center">
-                              <div className="col-4">
+                            <div className="step-content">
+                              <div className="puzzle-grid">
                                 <PuzzleBoard puzzle={step.state} />
                               </div>
-                              <div className="col-8">
+                              <div className="step-details">
                                 <p className="mb-0">
                                   <strong>Step {index + 1}</strong>
                                   {step.move
                                     ? `: Moved tile ${step.move.tile} ${step.move.direction}`
                                     : ": Initial state"}
                                 </p>
-                                <p className="mb-0">Heuristic: {step.hValue}</p>
+                                <p className="mb-1">Heuristic: {step.hValue}</p>
+                                <div className="mt-2">
+                                  <p className="mb-1">
+                                    <strong>h (heuristic value):</strong> {step.hValue}
+                                  </p>
+                                  <p className="mb-1">
+                                    <strong>g (steps from start):</strong> {step.gValue}
+                                  </p>
+                                  <p className="mb-1">
+                                    <strong>f (total cost):</strong> {step.fValue}
+                                  </p>
+                                </div>
                               </div>
                             </div>
                           </div>

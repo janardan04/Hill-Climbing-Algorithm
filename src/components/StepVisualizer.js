@@ -6,7 +6,6 @@ const StepVisualizer = ({ step, totalSteps, currentStep }) => {
 
   const getMoveDescription = () => {
     if (!move) return "Initial state"
-
     return `Moved tile ${move.tile} ${move.direction}`
   }
 
@@ -34,7 +33,7 @@ const StepVisualizer = ({ step, totalSteps, currentStep }) => {
               <strong>f (total cost):</strong> {fValue}
             </p>
 
-            <div className="progress mt-3 fade-in" style={{ animationDelay: "0.5s" }}>
+            <div className="progress mt-3 fade-in" style={{ animationDelay: "0.7s" }}>
               <div
                 className="progress-bar"
                 role="progressbar"

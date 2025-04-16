@@ -1,14 +1,14 @@
 :root {
   --primary-color: #fef9c3; /* yellow-100 */
-  --primary-light: #f0db34; /* yellow-200 */
-  --primary-dark: #fde047; /* yellow-300 */
-  --secondary-color: #edba3a; /* violet-600 */
-  --secondary-light: #f6c35c; /* violet-500 */
-  --secondary-dark: #d9d328; /* violet-700 */
+  --primary-light: #f6eca2; /* yellow-200 */
+  --primary-dark: #f1e49e; /* yellow-300 */
+  --secondary-color: #f4d893; /* violet-600 */
+  --secondary-light: #f9d690; /* violet-500 */
+  --secondary-dark: #ecea9e; /* violet-700 */
   --accent-color: #f97316; /* orange-500 */
   --accent-light: #fb923c; /* orange-400 */
   --accent-dark: #ea580c; /* orange-600 */
-  --background: #fffbeb; /* yellow-50 */
+  --background: #fafaf7; /* yellow-50 */
   --card-bg: #ffffff;
   --text-color: #1e293b;
   --text-light: #64748b;

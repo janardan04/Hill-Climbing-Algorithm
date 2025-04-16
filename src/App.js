@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import SolvePuzzlePage from './pages/SolvePuzzlePage';
 import AlgorithmPage from './pages/AlgorithmPage';
 import LearnPage from './pages/LearnPage';
+import ManualPlayPage from "./components/ManualPlayPage";
 import './styles/main.css';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
             <Route path="/solve" element={<SolvePuzzlePage />} />
             <Route path="/algorithm" element={<AlgorithmPage />} />
             <Route path="/learn" element={<LearnPage />} />
+            <Route path="/play" element={<ManualPlayPage />} />
           </Routes>
         </div>
       </div>
