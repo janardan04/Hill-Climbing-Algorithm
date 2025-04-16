@@ -47,13 +47,8 @@ const PuzzleControls = ({ puzzle, onCellChange, onGenerateRandom, onSolve, isSol
         >
           Generate Random
         </button>
-        <button
-          className="btn solve-button fade-in pulse"
-          style={{ animationDelay: "0.5s" }}
-          onClick={onSolve}
-          disabled={isSolving}
-        >
-          {isSolving ? "Solving..." : "Solve Puzzle"}
+        <button className="btn btn-primary" onClick={onSolve} disabled={isSolving}>
+          {isSolving ? "Solving..." : "Solve"}
         </button>
       </div>
     </div>
