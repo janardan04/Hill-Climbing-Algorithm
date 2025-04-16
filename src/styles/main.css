@@ -1,21 +1,21 @@
 :root {
-  --primary-color: #fef9c3; /* yellow-100 */
-  --primary-light: #f6eca2; /* yellow-200 */
-  --primary-dark: #f1e49e; /* yellow-300 */
-  --secondary-color: #f4d893; /* violet-600 */
-  --secondary-light: #f9d690; /* violet-500 */
-  --secondary-dark: #ecea9e; /* violet-700 */
-  --accent-color: #f97316; /* orange-500 */
-  --accent-light: #fb923c; /* orange-400 */
-  --accent-dark: #ea580c; /* orange-600 */
-  --background: #fafaf7; /* yellow-50 */
+  --primary-color: #a5d8ff; /* Light sky blue */
+  --primary-light: #c9e9ff; /* Lighter sky blue */
+  --primary-dark: #7ec8ff; /* Darker sky blue */
+  --secondary-color: #87cefa; /* Sky blue */
+  --secondary-light: #add8e6; /* Light blue */
+  --secondary-dark: #6cb4ee; /* Medium blue */
+  --accent-color: #4ab3f4; /* Bright sky blue */
+  --accent-light: #72c3fc; /* Light bright sky blue */
+  --accent-dark: #339af0; /* Dark bright sky blue */
+  --background: #f0f8ff; /* Very light sky blue */
   --card-bg: #ffffff;
-  --text-color: #1e293b;
-  --text-light: #64748b;
-  --goal-state-bg: #22c55e; /* green-500 */
-  --goal-state-light: #4ade80; /* green-400 */
-  --empty-cell: #f1f5f9;
-  --border-color: #e2e8f0;
+  --text-color: #000000; /* Black text */
+  --text-light: #333333; /* Light black */
+  --goal-state-bg: #87cefa; /* Sky blue for goal state */
+  --goal-state-light: #add8e6; /* Light blue for goal state */
+  --empty-cell: #e6f4ff; /* Very light sky blue */
+  --border-color: #c1e0ff; /* Light sky blue border */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -55,7 +55,7 @@ body {
 .card-header {
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--border-color);
-  background: linear-gradient(to right, rgba(254, 249, 195, 0.5), rgba(124, 58, 237, 0.1));
+  background: linear-gradient(to right, rgba(165, 216, 255, 0.5), rgba(135, 206, 250, 0.3));
 }
 
 .card-body {
@@ -65,7 +65,7 @@ body {
 .card-footer {
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--border-color);
-  background: rgba(254, 249, 195, 0.2);
+  background: rgba(165, 216, 255, 0.2);
 }
 
 .btn {
@@ -82,7 +82,7 @@ body {
 
 .btn-primary {
   background: linear-gradient(135deg, var(--secondary-color), var(--secondary-dark));
-  color: white;
+  color: black;
 }
 
 .btn-primary:hover {
@@ -92,7 +92,7 @@ body {
 
 .btn-secondary {
   background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
-  color: white;
+  color: black;
 }
 
 .btn-secondary:hover {
@@ -120,13 +120,13 @@ body {
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.7);
+    box-shadow: 0 0 0 0 rgba(135, 206, 250, 0.7);
   }
   70% {
-    box-shadow: 0 0 0 10px rgba(124, 58, 237, 0);
+    box-shadow: 0 0 0 10px rgba(135, 206, 250, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+    box-shadow: 0 0 0 0 rgba(135, 206, 250, 0);
   }
 }
 
@@ -316,7 +316,7 @@ body {
 
 .puzzle-input:focus {
   border-color: var(--secondary-color);
-  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+  box-shadow: 0 0 0 2px rgba(135, 206, 250, 0.2);
   outline: none;
 }
 
@@ -378,7 +378,7 @@ body {
 
 .step-card.active {
   border-color: var(--secondary-color);
-  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+  box-shadow: 0 0 0 2px rgba(135, 206, 250, 0.2);
 }
 
 .step-card:hover {
@@ -389,16 +389,16 @@ body {
 /* Solve Button Highlight */
 .solve-button {
   background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
-  color: white;
+  color: black;
   font-size: 1.1rem;
   padding: 0.6rem 1.2rem;
-  box-shadow: 0 4px 6px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 4px 6px rgba(74, 179, 244, 0.3);
 }
 
 .solve-button:hover {
   background: linear-gradient(135deg, var(--accent-dark), var(--accent-color));
   transform: translateY(-2px);
-  box-shadow: 0 6px 8px rgba(249, 115, 22, 0.4);
+  box-shadow: 0 6px 8px rgba(74, 179, 244, 0.4);
 }
 
 /* Responsive Styles */
@@ -450,6 +450,6 @@ body {
   background: linear-gradient(to right, var(--secondary-color), var(--accent-color));
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
+  color: black;
   font-weight: 700;
 }

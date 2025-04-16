@@ -4,7 +4,7 @@
 }
 
 .step-info-card {
-  background: linear-gradient(to right, rgba(254, 249, 195, 0.2), rgba(124, 58, 237, 0.05));
+  background: linear-gradient(to right, rgba(165, 216, 255, 0.2), rgba(135, 206, 250, 0.05));
   border-radius: 0.75rem;
   padding: 1.25rem;
   height: 100%;
@@ -19,14 +19,14 @@
 
 .progress {
   height: 0.5rem;
-  background-color: rgba(124, 58, 237, 0.2);
+  background-color: rgba(135, 206, 250, 0.2);
   border-radius: 1rem;
   overflow: hidden;
 }
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(to right, var(--secondary-color), var(--accent-color));
+  background: linear-gradient(to right, #87cefa, #4ab3f4);
   border-radius: 1rem;
   transition: width 0.3s ease;
 }
