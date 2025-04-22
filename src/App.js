@@ -1,12 +1,13 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navigation from './components/Navigation';
-import HomePage from './pages/HomePage';
-import SolvePuzzlePage from './pages/SolvePuzzlePage';
-import AlgorithmPage from './pages/AlgorithmPage';
-import LearnPage from './pages/LearnPage';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navigation from "./components/Navigation";
+import HomePage from "./pages/HomePage";
+import SolvePuzzlePage from "./pages/SolvePuzzlePage";
+import AlgorithmPage from "./pages/AlgorithmPage";
+import LearnPage from "./pages/LearnPage";
 import ManualPlayPage from "./components/ManualPlayPage";
-import './styles/main.css';
+import DiagramPage from "./pages/DiagramPage";
+import "./styles/main.css";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/algorithm" element={<AlgorithmPage />} />
             <Route path="/learn" element={<LearnPage />} />
             <Route path="/play" element={<ManualPlayPage />} />
+            <Route path="/diagram" element={<DiagramPage />} />
           </Routes>
         </div>
       </div>

@@ -1,124 +1,153 @@
-"use client"
-import { useState, useEffect } from "react"
-import PuzzleBoard from "../components/PuzzleBoard"
-import PuzzleControls from "../components/PuzzleControls"
-import StepVisualizer from "../components/StepVisualizer"
-import { hillClimbing } from "../utils/hillClimbing"
-import { generateRandomPuzzle } from "../utils/puzzleGenerator"
-import { calculateManhattanDistance, getPossibleMoves, applyMove, findEmptyPosition } from "../utils/hillClimbing"
-import { areStatesEqual, isSolvable } from "../utils/puzzleSolver"
-import "../styles/solve-puzzle.css"
-import "../styles/main.css"
+"use client";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Correct import for useNavigate
+import PuzzleBoard from "../components/PuzzleBoard";
+import PuzzleControls from "../components/PuzzleControls";
+import StepVisualizer from "../components/StepVisualizer";
+import { hillClimbing } from "../utils/hillClimbing";
+import { aStar } from "../utils/aStar";
+import { generateRandomPuzzle } from "../utils/puzzleGenerator";
+import {
+  calculateManhattanDistance,
+  getPossibleMoves,
+  applyMove,
+  findEmptyPosition,
+} from "../utils/hillClimbing";
+import { areStatesEqual, isSolvable } from "../utils/puzzleSolver";
+import "../styles/solve-puzzle.css";
+import "../styles/main.css";
 
 const SolvePuzzlePage = () => {
   const [puzzle, setPuzzle] = useState([
     [1, 2, 3],
     [4, 0, 6],
     [7, 8, 5],
-  ])
+  ]);
   const [goalState] = useState([
     [1, 2, 3],
     [4, 5, 6],
     [7, 8, 0],
-  ])
-  const [solution, setSolution] = useState([])
-  const [currentStep, setCurrentStep] = useState(0)
-  const [isAnimating, setIsAnimating] = useState(false)
-  const [error, setError] = useState("")
-  const [isSolving, setIsSolving] = useState(false)
-  const [showAllSteps, setShowAllSteps] = useState(false)
-  const [animationSpeed, setAnimationSpeed] = useState(2000)
+  ]);
+  const [solution, setSolution] = useState([]);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [error, setError] = useState("");
+  const [isSolving, setIsSolving] = useState(false);
+  const [showAllSteps, setShowAllSteps] = useState(false);
+  const [animationSpeed, setAnimationSpeed] = useState(2000);
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState("hillClimbing");
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleCellChange = (row, col, value) => {
-    const newPuzzle = [...puzzle]
-    newPuzzle[row][col] = value === "" ? 0 : Number.parseInt(value, 10)
-    setPuzzle(newPuzzle)
-  }
+    const newPuzzle = [...puzzle];
+    newPuzzle[row][col] = value === "" ? 0 : Number.parseInt(value, 10);
+    setPuzzle(newPuzzle);
+  };
 
   const handleGenerateRandom = () => {
-    const randomPuzzle = generateRandomPuzzle()
-    setPuzzle(randomPuzzle)
-    setSolution([])
-    setCurrentStep(0)
-    setError("")
-  }
+    const randomPuzzle = generateRandomPuzzle();
+    setPuzzle(randomPuzzle);
+    setSolution([]);
+    setCurrentStep(0);
+    setError("");
+  };
 
   const handleSolve = () => {
-    setSolution([])
-    setCurrentStep(0)
-    setError("")
+    setSolution([]);
+    setCurrentStep(0);
+    setError("");
 
     if (!isSolvable(puzzle)) {
       setError(
         "This puzzle configuration is not solvable due to an odd number of inversions relative to the empty tile position."
-      )
-      return
+      );
+      return;
     }
 
-    setIsSolving(true)
+    setIsSolving(true);
 
     setTimeout(() => {
       try {
-        const result = hillClimbing(puzzle, goalState)
-        if (result.path.length === 0 || result.path[result.path.length - 1].hValue !== 0) {
-          const lastState = result.path[result.path.length - 1].state
-          const possibleMoves = getPossibleMoves(lastState)
-          const currentHValue = calculateManhattanDistance(lastState, goalState)
-          const moveEvaluations = possibleMoves.map((move) => {
-            const newState = applyMove(lastState, move)
-            return calculateManhattanDistance(newState, goalState)
-          })
-          const minNeighborHValue = Math.min(...moveEvaluations)
-          let errorMessage = "No solution found. The hill climbing algorithm got stuck. "
-          if (minNeighborHValue >= currentHValue) {
-            errorMessage += "Reason: Local Optimum - No neighboring state has a better heuristic value."
-          } else if (moveEvaluations.every((h) => h === currentHValue)) {
-            errorMessage += "Reason: Plateau - All neighboring states have the same heuristic value."
-          } else {
-            errorMessage += "Reason: Possible ridge or visited states limit reached."
-          }
-          setError(errorMessage)
-          setSolution(result.path)
+        let result;
+        if (selectedAlgorithm === "hillClimbing") {
+          result = hillClimbing(puzzle, goalState);
         } else {
-          setSolution(result.path)
+          result = aStar(puzzle, goalState);
+        }
+
+        if (result.path.length === 0 || result.path[result.path.length - 1].hValue !== 0) {
+          const lastState = result.path[result.path.length - 1].state;
+          const possibleMoves = getPossibleMoves(lastState);
+          const currentHValue = calculateManhattanDistance(lastState, goalState);
+          const moveEvaluations = possibleMoves.map((move) => {
+            const newState = applyMove(lastState, move);
+            return calculateManhattanDistance(newState, goalState);
+          });
+          const minNeighborHValue = Math.min(...moveEvaluations);
+          let errorMessage = `No solution found. The ${selectedAlgorithm} algorithm failed. `;
+          if (selectedAlgorithm === "hillClimbing") {
+            if (minNeighborHValue >= currentHValue) {
+              errorMessage += "Reason: Local Optimum - No neighboring state has a better heuristic value.";
+            } else if (moveEvaluations.every((h) => h === currentHValue)) {
+              errorMessage += "Reason: Plateau - All neighboring states have the same heuristic value.";
+            } else {
+              errorMessage += "Reason: Possible ridge or visited states limit reached.";
+            }
+          } else {
+            errorMessage += "Reason: A* failed to find a solution path.";
+          }
+          setError(errorMessage);
+          setSolution(result.path);
+        } else {
+          setSolution(result.path);
         }
       } catch (err) {
-        setError("Error solving puzzle: " + err.message)
+        setError(`Error solving puzzle with ${selectedAlgorithm}: ` + err.message);
       } finally {
-        setIsSolving(false)
+        setIsSolving(false);
       }
-    }, 1000)
-  }
+    }, 1000);
+  };
 
   const handleAnimateSolution = () => {
-    if (solution.length === 0) return
-    setIsAnimating(true)
-    setCurrentStep(0)
-  }
+    if (solution.length === 0) return;
+    setIsAnimating(true);
+    setCurrentStep(0);
+  };
 
   const handleSpeedChange = (e) => {
-    setAnimationSpeed(Number.parseInt(e.target.value))
-  }
+    setAnimationSpeed(Number.parseInt(e.target.value));
+  };
+
+  const handleAlgorithmChange = (e) => {
+    setSelectedAlgorithm(e.target.value);
+  };
+
+  const handleShowDiagram = () => {
+    if (solution.length > 0) {
+      navigate(`/diagram?data=${encodeURIComponent(JSON.stringify({ solution, initialState: puzzle, goalState }))}`);
+    }
+  };
 
   useEffect(() => {
-    let timer
+    let timer;
     if (isAnimating && currentStep < solution.length - 1) {
       timer = setTimeout(() => {
-        setCurrentStep((prev) => prev + 1)
-      }, animationSpeed)
+        setCurrentStep((prev) => prev + 1);
+      }, animationSpeed);
     } else if (currentStep >= solution.length - 1) {
-      setIsAnimating(false)
+      setIsAnimating(false);
     }
-    return () => clearTimeout(timer)
-  }, [isAnimating, currentStep, solution.length, animationSpeed])
+    return () => clearTimeout(timer);
+  }, [isAnimating, currentStep, solution.length, animationSpeed]);
 
   const getPossibleNextStates = (stepIndex) => {
-    if (stepIndex >= solution.length) return []
-    const currentState = solution[stepIndex].state
-    const possibleMoves = getPossibleMoves(currentState)
+    if (stepIndex >= solution.length) return [];
+    const currentState = solution[stepIndex].state;
+    const possibleMoves = getPossibleMoves(currentState);
     const nextStates = possibleMoves.map((move) => {
-      const newState = applyMove(currentState, move)
-      const hValue = calculateManhattanDistance(newState, goalState)
+      const newState = applyMove(currentState, move);
+      const hValue = calculateManhattanDistance(newState, goalState);
       return {
         state: newState,
         move,
@@ -128,10 +157,10 @@ const SolvePuzzlePage = () => {
           solution[stepIndex + 1].move &&
           solution[stepIndex + 1].move.tile === move.tile &&
           solution[stepIndex + 1].move.direction === move.direction,
-      }
-    })
-    return nextStates.sort((a, b) => a.hValue - b.hValue)
-  }
+      };
+    });
+    return nextStates.sort((a, b) => a.hValue - b.hValue);
+  };
 
   return (
     <div className="solve-puzzle-page">
@@ -144,6 +173,19 @@ const SolvePuzzlePage = () => {
               <h4>Puzzle Configuration</h4>
             </div>
             <div className="card-body">
+              <div className="algorithm-selection mb-3">
+                <label htmlFor="algorithmSelect">Select Algorithm:</label>
+                <select
+                  id="algorithmSelect"
+                  value={selectedAlgorithm}
+                  onChange={handleAlgorithmChange}
+                  disabled={isSolving}
+                >
+                  <option value="hillClimbing">Hill Climbing</option>
+                  <option value="aStar">A*</option>
+                </select>
+              </div>
+
               <PuzzleControls
                 puzzle={puzzle}
                 onCellChange={handleCellChange}
@@ -201,8 +243,11 @@ const SolvePuzzlePage = () => {
                       <button className="btn btn-primary me-2" onClick={handleAnimateSolution} disabled={isAnimating}>
                         {isAnimating ? "Animating..." : "Animate Solution"}
                       </button>
-                      <button className="btn btn-secondary" onClick={() => setShowAllSteps(!showAllSteps)}>
+                      <button className="btn btn-secondary me-2" onClick={() => setShowAllSteps(!showAllSteps)}>
                         {showAllSteps ? "Hide All Steps" : "Show All Steps"}
+                      </button>
+                      <button className="btn btn-info" onClick={handleShowDiagram} disabled={isAnimating}>
+                        Show Diagram
                       </button>
                     </div>
                   </div>
@@ -278,8 +323,8 @@ const SolvePuzzlePage = () => {
                             key={index}
                             className={`step-card ${index === currentStep ? "active" : ""}`}
                             onClick={() => {
-                              setCurrentStep(index)
-                              setIsAnimating(false)
+                              setCurrentStep(index);
+                              setIsAnimating(false);
                             }}
                           >
                             <div className="step-content">
@@ -323,7 +368,7 @@ const SolvePuzzlePage = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SolvePuzzlePage
+export default SolvePuzzlePage;
